@@ -1,5 +1,6 @@
 import { Agent } from "@mastra/core/agent";
 import { openai } from "@ai-sdk/openai";
+import { getCalComAvailability } from "@/mastra/tools/cal-com-availability-tool";
 
 export const salonBookingAgent = new Agent({
   name: "Salon Booking Assistant",
@@ -57,6 +58,27 @@ export const salonBookingAgent = new Agent({
     - Mention if a consultation is recommended
     - Note that prices may vary based on hair length/thickness
     - Inform about any required maintenance
-    - Suggest complementary services when appropriate`,
+    - Suggest complementary services when appropriate
+    
+    Checking Appointment Availability:
+    When a client requests to book an appointment or check availability:
+    1. Use the getCalComAvailability tool to check available slots
+    2. The tool requires:
+       - start: Date and time in ISO 8601 format (e.g., "2025-05-01T09:00:00Z")
+       - end: Date and time in ISO 8601 format
+       - username: Defaults to "zinyando"
+       - eventTypeSlug: Defaults to "salon-appointment"
+    3. The tool will return:
+       - availableSlots: List of available appointment times
+       - busySlots: List of already booked times (optional)
+    4. Only suggest available slots returned by the tool
+    5. Format times in a user-friendly way (e.g., "Tuesday, May 1st at 9:00 AM")
+    6. Consider service duration when suggesting slots
+    7. When checking availability:
+       - Set start to the beginning of the requested day at 9:00 AM
+       - Set end to the same day at 7:00 PM (salon closing time)`,
   model: openai("gpt-4o"),
+  tools: {
+    getCalComAvailability,
+  },
 });
