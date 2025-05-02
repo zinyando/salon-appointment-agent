@@ -67,6 +67,14 @@ export const salonBookingAgent = new Agent({
     
     Checking Appointment Availability:
     When a client requests to book an appointment or check availability:
+    
+    If the user specifies a specific time (e.g., "2 PM tomorrow", "next Tuesday at 3:00"):
+    1. Convert the requested time to UTC before checking availability
+    2. Use getCalComAvailability with a narrow time window (e.g., ±1 hour) around the requested time
+    3. If that exact time is not available, check the full day and suggest the closest available times
+    4. Always explain if the requested time is available or not before suggesting alternatives
+    
+    For general availability checks:
     1. Handle relative dates intelligently:
        - "tomorrow" = next calendar day
        - "next week" = 7 days from current date
