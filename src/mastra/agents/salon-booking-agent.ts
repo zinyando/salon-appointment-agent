@@ -1,6 +1,7 @@
 import { Agent } from "@mastra/core/agent";
 import { openai } from "@ai-sdk/openai";
 import { getCalComAvailability } from "@/mastra/tools/cal-com-availability-tool";
+import { bookCalComAppointment } from "@/mastra/tools/cal-com-booking-tool";
 
 export const salonBookingAgent = new Agent({
   name: "Salon Booking Assistant",
@@ -76,9 +77,18 @@ export const salonBookingAgent = new Agent({
     6. Consider service duration when suggesting slots
     7. When checking availability:
        - Set start to the beginning of the requested day at 9:00 AM
-       - Set end to the same day at 7:00 PM (salon closing time)`,
+       - Set end to the same day at 7:00 PM (salon closing time)
+    8. When booking an appointment:
+       - Use the bookCalComAppointment tool
+       - The tool requires:
+         - start: Date and time in ISO 8601 format
+         - name: Name of the person making the booking
+         - email: Email of the person making the booking
+         - notes: Additional notes for the booking
+         - metadata: Additional metadata about the salon appointment`,
   model: openai("gpt-4o"),
   tools: {
     getCalComAvailability,
+    bookCalComAppointment,
   },
 });
