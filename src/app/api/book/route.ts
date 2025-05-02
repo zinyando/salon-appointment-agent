@@ -14,7 +14,6 @@ export async function POST(request: NextRequest) {
       headers: {
         "Content-Type": "application/json",
         "cal-api-version": "2024-08-13",
-        Authorization: `Bearer ${process.env.CAL_API_KEY}`,
       },
       body: JSON.stringify({
         attendee: {

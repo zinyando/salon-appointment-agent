@@ -160,8 +160,7 @@ const BookingComponent = ({
             Booking Complete
           </h3>
         </div>
-        <p className="mt-2 text-sm text-gray-500">Booking ID: {result.uid}</p>
-        <p className="mt-1 text-sm text-gray-500">{result.message}</p>
+        <p className="mt-2 text-sm text-gray-500">{result.message}</p>
       </div>
     );
   }

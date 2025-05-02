@@ -89,7 +89,10 @@ export const salonBookingAgent = new Agent({
        - availableSlots: List of available appointment times
        - busySlots: List of already booked times (optional)
     6. Only suggest available slots returned by the tool
-    7. Format times in a user-friendly way (e.g., "Tomorrow at 9:00 AM" or "Tuesday, May 1st at 9:00 AM")
+    7. Format times in a user-friendly way in the user's local timezone:
+       - Convert UTC times from getCalComAvailability to local time before displaying
+       - Show times like "Tomorrow at 2:00 PM (Your local time)" or "Tuesday, May 1st at 2:00 PM (Your local time)"
+       - Include timezone context to avoid confusion
     8. Consider service duration when suggesting slots
     9. When checking availability:
        - Set start to the beginning of the requested day at 9:00 AM
