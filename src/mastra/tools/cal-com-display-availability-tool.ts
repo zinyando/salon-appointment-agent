@@ -20,19 +20,29 @@ export type AvailabilityResult = {
   message?: string;
 };
 
-export const getCalComAvailability = createTool({
-  id: "getCalComAvailability",
+export const displayCalComAvailability = createTool({
+  id: "displayCalComAvailability",
   description:
-    "Fetches available booking slots from Cal.com for a specific event type within a given time range.",
+    "Displays available booking slots from Cal.com for a specific event type within a given time range.",
   inputSchema: z.object({
-    start: z
-      .string()
-      .datetime()
-      .describe("Start time of the availability search range (ISO 8601)"),
-    end: z
-      .string()
-      .datetime()
-      .describe("End time of the availability search range (ISO 8601)"),
+    availableSlots: z
+      .array(
+        z.object({
+          time: z.string().datetime(),
+          bookingUid: z.string().nullable().optional(),
+        })
+      )
+      .describe("List of available time slots."),
+    busySlots: z
+      .array(
+        z.object({
+          start: z.string().datetime(),
+          end: z.string().datetime(),
+        })
+      )
+      .optional()
+      .describe("List of busy time slots (optional, depends on API response)."),
+    timeZone: z.string().describe("The time zone used for the slots."),
   }),
   outputSchema: z.object({
     availableSlots: z.array(

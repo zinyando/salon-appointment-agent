@@ -5,7 +5,7 @@ import { useChatRuntime } from "@assistant-ui/react-ai-sdk";
 import { Thread } from "@/components/assistant-ui/thread";
 import { ThreadList } from "@/components/assistant-ui/thread-list";
 import { CalComBookingUI } from "@/components/tools/CalComBookingUI";
-import { CalComAvailabilityUI } from "@/components/tools/CalComAvailabilityUI";
+import { CalComDisplayAvailabilityUI } from "@/components/tools/CalComDisplayAvailabilityUI";
 
 export const Assistant = () => {
   const runtime = useChatRuntime({
@@ -18,7 +18,7 @@ export const Assistant = () => {
         <ThreadList />
         <Thread />
         <CalComBookingUI />
-        <CalComAvailabilityUI />
+        <CalComDisplayAvailabilityUI />
       </div>
     </AssistantRuntimeProvider>
   );
