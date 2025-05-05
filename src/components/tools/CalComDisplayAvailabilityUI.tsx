@@ -68,9 +68,14 @@ const AvailabilityComponent = ({
 
     if (!selectedSlot) return;
 
+    const resultSlot: Slot = {
+      time: selectedSlot.time,
+      bookingUid: selectedSlot.bookingUid ?? null,
+    };
+
     const newResult: DisplayResult = {
       status: "completed",
-      availableSlots: [selectedSlot],
+      availableSlots: [resultSlot],
       timeZone: args.timeZone,
     };
 
@@ -80,6 +85,9 @@ const AvailabilityComponent = ({
   return (
     <div className="space-y-4">
       <h3 className="text-lg font-semibold">Available Time Slots</h3>
+      <p className="text-sm text-muted-foreground">
+        Select a time slot to book your appointment.
+      </p>
       <div className="grid grid-cols-3 gap-2">
         {args.availableSlots.map((slot: Slot) => {
           const date = new Date(slot.time);
@@ -122,7 +130,6 @@ const AvailabilityComponent = ({
   );
 };
 
-// Use the manually defined types here
 export const CalComDisplayAvailabilityUI = makeAssistantToolUI<
   DisplayArgs,
   DisplayResult
