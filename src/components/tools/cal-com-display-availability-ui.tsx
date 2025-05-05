@@ -38,6 +38,39 @@ const AvailabilityComponent = ({
 }: AvailabilityComponentProps) => {
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
 
+  if (result?.status === "completed") {
+    return (
+      <div className="p-4 bg-white rounded-lg shadow border border-teal-200">
+        <div className="flex items-center gap-2">
+          <svg
+            className="w-5 h-5 text-teal-500"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M5 13l4 4L19 7"
+            />
+          </svg>
+          <h3 className="text-lg font-medium text-gray-900">Time Slot Selected</h3>
+        </div>
+        <p className="mt-2 text-sm text-gray-500">
+          {new Date(result.selectedSlot.time).toLocaleString([], {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: 'numeric',
+            minute: '2-digit'
+          })}
+        </p>
+      </div>
+    );
+  }
+
   if (result?.status === "error") {
     return (
       <div className="p-4 bg-red-50 rounded-lg">
