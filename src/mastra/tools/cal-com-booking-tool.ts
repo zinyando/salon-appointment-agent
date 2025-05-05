@@ -2,7 +2,7 @@ import { createTool } from "@mastra/core/tools";
 import { z } from "zod";
 
 export const bookCalComAppointment = createTool({
-  id: "Book Cal.com Appointment",
+  id: "bookCalComAppointment",
   description: "Book an appointment using the Cal.com API",
   inputSchema: z.object({
     start: z

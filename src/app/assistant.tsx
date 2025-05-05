@@ -3,8 +3,8 @@
 import { AssistantRuntimeProvider } from "@assistant-ui/react";
 import { useChatRuntime } from "@assistant-ui/react-ai-sdk";
 import { Thread } from "@/components/assistant-ui/thread";
-import { CalComBookingUI } from "@/components/tools/CalComBookingUI";
-import { CalComDisplayAvailabilityUI } from "@/components/tools/CalComDisplayAvailabilityUI";
+import { CalComBookingUI } from "@/components/tools/cal-com-booking-ui";
+import { CalComDisplayAvailabilityUI } from "@/components/tools/cal-com-display-availability-ui";
 
 export const Assistant = () => {
   const runtime = useChatRuntime({

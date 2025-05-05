@@ -67,7 +67,7 @@ const outputSchema = z.object({
 });
 
 export const getCalComAvailability = createTool({
-  id: "get_cal_com_availability",
+  id: "getCalComAvailability",
   description:
     "Fetches available booking slots from Cal.com for a specific event type within a given time range.",
   inputSchema,
