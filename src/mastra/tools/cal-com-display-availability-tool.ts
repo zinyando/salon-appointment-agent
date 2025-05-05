@@ -45,12 +45,10 @@ export const displayCalComAvailability = createTool({
     timeZone: z.string().describe("The time zone used for the slots."),
   }),
   outputSchema: z.object({
-    availableSlots: z.array(
-      z.object({
-        time: z.string().datetime(),
-        bookingUid: z.string().nullable(),
-      })
-    ),
+    selectedSlot: z.object({
+      time: z.string().datetime(),
+      bookingUid: z.string().nullable(),
+    }),
     timeZone: z.string(),
     status: z.enum(["completed", "error"]),
     message: z.string().optional(),

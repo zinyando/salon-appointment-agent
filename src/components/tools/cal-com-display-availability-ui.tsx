@@ -18,7 +18,7 @@ type DisplayArgs = {
 };
 
 type DisplayResult = {
-  availableSlots: Slot[];
+  selectedSlot: Slot;
   timeZone: string;
   status: "completed" | "error";
   message?: string;
@@ -75,8 +75,9 @@ const AvailabilityComponent = ({
 
     const newResult: DisplayResult = {
       status: "completed",
-      availableSlots: [resultSlot],
+      selectedSlot: resultSlot,
       timeZone: args.timeZone,
+      message: `Slot for ${selectedSlot.time} selected and confirmed.`,
     };
 
     addResult(newResult);
@@ -97,7 +98,7 @@ const AvailabilityComponent = ({
             <button
               key={slot.time}
               onClick={() => setSelectedTime(slot.time)}
-              className={`p-2 rounded-lg text-sm ${
+              className={`cursor-pointer p-2 rounded-lg text-sm ${
                 isSelected
                   ? "bg-teal-600 text-white"
                   : "bg-gray-100 hover:bg-gray-200"
@@ -119,7 +120,7 @@ const AvailabilityComponent = ({
               e.preventDefault();
               handleConfirmSelection();
             }}
-            className="px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors w-full"
+            className="cursor-pointer px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors w-full"
             type="button"
           >
             Confirm Selection
