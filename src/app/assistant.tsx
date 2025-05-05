@@ -13,7 +13,7 @@ export const Assistant = () => {
 
   return (
     <div className="flex flex-col h-screen">
-      <header className="bg-gray-100 p-4 border-b border-gray-300 flex justify-between items-center shrink-0">
+      <header className="bg-white px-4 py-3 shadow-sm flex justify-between items-center shrink-0">
         <h1 className="text-xl font-semibold">
           Jenny&apos;s Hair Salon Booking
         </h1>
@@ -23,7 +23,7 @@ export const Assistant = () => {
             href="https://mastra.ai"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-blue-600 hover:underline"
+            className="text-teal-600 hover:text-teal-700"
           >
             mastra
           </a>

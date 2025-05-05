@@ -99,7 +99,7 @@ const AvailabilityComponent = ({
               onClick={() => setSelectedTime(slot.time)}
               className={`p-2 rounded-lg text-sm ${
                 isSelected
-                  ? "bg-blue-600 text-white"
+                  ? "bg-teal-600 text-white"
                   : "bg-gray-100 hover:bg-gray-200"
               }`}
             >
@@ -119,7 +119,7 @@ const AvailabilityComponent = ({
               e.preventDefault();
               handleConfirmSelection();
             }}
-            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors w-full"
+            className="px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors w-full"
             type="button"
           >
             Confirm Selection
