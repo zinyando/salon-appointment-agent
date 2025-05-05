@@ -66,6 +66,20 @@ export const salonBookingAgent = new Agent({
 
     Current date and time: ${currentDateTime}
     
+    When checking appointment availability:
+    1. First, determine the appropriate start time, end time, and duration for the requested service. Convert user-provided dates/times (e.g., "tomorrow at 2pm") to UTC ISO 8601 format based on the current date and time: ${currentDateTime}.
+    2. Call the getCalComAvailability tool with the calculated start, end, duration, and the eventTypeId '2381090'.
+    3. The getCalComAvailability tool will return a list of available time slots and the relevant time zone.
+    4. IMMEDIATELY AFTER getCalComAvailability returns, call the displayCalComAvailability tool.
+    5. Pass the 'availableSlots' and 'timeZone' received from the result of getCalComAvailability as arguments to displayCalComAvailability.
+    6. Do NOT add any conversational text between calling getCalComAvailability and displayCalComAvailability. Simply chain the tool calls.
+    7. The displayCalComAvailability tool will present the slots to the user for selection.
+
+    Booking an appointment:
+    1. After the user selects a time slot using the displayCalComAvailability UI, the tool will return the selected slot.
+    2. Use the bookCalComAppointment tool to finalize the booking.
+    3. Pass the selected slot's 'time' as the 'start' argument, along with the user's 'name', 'email', and any relevant 'notes' or 'metadata' (like the service booked).
+
     Checking Appointment Availability:
     When a client requests to book an appointment or check availability:
     
@@ -91,16 +105,17 @@ export const salonBookingAgent = new Agent({
        - The tool requires:
          - start: Date and time in ISO 8601 format (e.g., "2025-05-01T09:00:00Z")
          - end: Date and time in ISO 8601 format
-       - Display the tool UI to the user, don't add additional text
+         - duration: Duration of the event in minutes (required, use service durations)
+         - eventTypeId: The ID for the event type (use '2381090')
     4. When displaying availability:
-       - Use the displayCalComAvailability tool
+       - Use the displayCalComAvailability tool AFTER getting results from getCalComAvailability.
        - The tool requires:
-         - start: Date and time in ISO 8601 format
-         - end: Date and time in ISO 8601 format
+         - availableSlots: The array of slot objects returned by getCalComAvailability.
+         - timeZone: The time zone string returned by getCalComAvailability.
     5. When booking an appointment:
-       - Use the bookCalComAppointment tool
+       - Use the bookCalComAppointment tool AFTER the user selects a slot via displayCalComAvailability.
        - The tool requires:
-         - start: Date and time in ISO 8601 format
+         - start: Date and time in ISO 8601 format (from the selected slot)
          - name: Name of the person making the booking
          - email: Email of the person making the booking
          - notes: Additional notes for the booking

@@ -1,15 +1,34 @@
 import { makeAssistantToolUI } from "@assistant-ui/react";
 import { useState } from "react";
-import type {
-  AvailabilityArgs,
-  AvailabilityResult,
-} from "@/mastra/tools/cal-com-get-availability-tool";
+
+type Slot = {
+  time: string;
+  bookingUid?: string | null;
+};
+
+type BusySlot = {
+  start: string;
+  end: string;
+};
+
+type DisplayArgs = {
+  availableSlots: Slot[];
+  busySlots?: BusySlot[];
+  timeZone: string;
+};
+
+type DisplayResult = {
+  availableSlots: Slot[];
+  timeZone: string;
+  status: "completed" | "error";
+  message?: string;
+};
 
 type AvailabilityComponentProps = {
-  args: AvailabilityArgs;
+  args: DisplayArgs;
   status: { type: string };
-  result?: AvailabilityResult;
-  addResult: (result: AvailabilityResult) => void;
+  result?: DisplayResult;
+  addResult: (result: DisplayResult) => void;
 };
 
 const AvailabilityComponent = ({
@@ -19,17 +38,18 @@ const AvailabilityComponent = ({
 }: AvailabilityComponentProps) => {
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
 
-  if (!result || result.status === "error") {
+  if (result?.status === "error") {
     return (
       <div className="p-4 bg-red-50 rounded-lg">
         <p className="text-red-600">
-          {result?.message || "Failed to load available slots"}
+          {result?.message ||
+            "An error occurred while processing the selection."}
         </p>
       </div>
     );
   }
 
-  if (result.availableSlots.length === 0) {
+  if (!args.availableSlots || args.availableSlots.length === 0) {
     return (
       <div className="p-4 bg-yellow-50 rounded-lg">
         <p className="text-yellow-600">
@@ -42,16 +62,16 @@ const AvailabilityComponent = ({
   const handleConfirmSelection = () => {
     if (!selectedTime) return;
 
-    const selectedSlot = result.availableSlots.find(
+    const selectedSlot = args.availableSlots.find(
       (slot) => slot.time === selectedTime
     );
 
     if (!selectedSlot) return;
 
-    const newResult: AvailabilityResult = {
+    const newResult: DisplayResult = {
       status: "completed",
       availableSlots: [selectedSlot],
-      timeZone: result.timeZone,
+      timeZone: args.timeZone,
     };
 
     addResult(newResult);
@@ -61,7 +81,7 @@ const AvailabilityComponent = ({
     <div className="space-y-4">
       <h3 className="text-lg font-semibold">Available Time Slots</h3>
       <div className="grid grid-cols-3 gap-2">
-        {result.availableSlots.map((slot) => {
+        {args.availableSlots.map((slot: Slot) => {
           const date = new Date(slot.time);
           const isSelected = selectedTime === slot.time;
 
@@ -102,9 +122,10 @@ const AvailabilityComponent = ({
   );
 };
 
+// Use the manually defined types here
 export const CalComDisplayAvailabilityUI = makeAssistantToolUI<
-  AvailabilityArgs,
-  AvailabilityResult
+  DisplayArgs,
+  DisplayResult
 >({
   toolName: "displayCalComAvailability",
   render: (props) => <AvailabilityComponent {...props} />,
