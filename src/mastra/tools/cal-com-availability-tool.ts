@@ -33,11 +33,6 @@ export const getCalComAvailability = createTool({
       .string()
       .datetime()
       .describe("End time of the availability search range (ISO 8601)"),
-    username: z.string().default("zinyando").describe("Cal.com username"),
-    eventTypeSlug: z
-      .string()
-      .default("salon-appointment")
-      .describe("Event type slug"),
   }),
   outputSchema: z.object({
     availableSlots: z.array(

@@ -6,8 +6,8 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { start, email, name, phoneNumber, metadata } = body;
 
-    const username = "zinyando";
-    const eventTypeSlug = "salon-appointment";
+    const username = process.env.CAL_USERNAME!;
+    const eventTypeSlug = process.env.CAL_EVENT_TYPE_SLUG!;
 
     const response = await fetch(`https://api.cal.com/v2/bookings`, {
       method: "POST",

@@ -91,8 +91,6 @@ export const salonBookingAgent = new Agent({
     4. The tool requires:
        - start: Date and time in ISO 8601 format (e.g., "2025-05-01T09:00:00Z")
        - end: Date and time in ISO 8601 format
-       - username: Defaults to "zinyando"
-       - eventTypeSlug: Defaults to "salon-appointment"
     5. The tool will return:
        - availableSlots: List of available appointment times
        - busySlots: List of already booked times (optional)

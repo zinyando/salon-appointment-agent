@@ -28,29 +28,21 @@ const AvailabilityComponent = ({
     }
 
     const fetchAvailability = async () => {
-      const {
-        start,
-        end,
-        username = "zinyando",
-        eventTypeSlug = "salon-appointment",
-      } = args;
+      const { start, end } = args;
       setIsLoading(true);
 
       try {
         const query: Record<string, string> = {
           start,
           end,
-          username,
-          eventTypeSlug,
         };
 
         const searchParams = new URLSearchParams(query);
 
         const response = await fetch(
-          `https://api.cal.com/v2/slots?${searchParams}`,
+          `/api/cal-availability?${searchParams}`,
           {
             headers: {
-              "cal-api-version": "2024-09-04",
               "content-type": "application/json",
             },
           }
