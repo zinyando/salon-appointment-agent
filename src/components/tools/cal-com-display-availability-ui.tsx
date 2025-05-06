@@ -20,7 +20,6 @@ type DisplayResult = {
 
 type AvailabilityComponentProps = {
   args: DisplayArgs;
-  status: { type: string };
   result?: DisplayResult;
   addResult: (result: DisplayResult) => void;
 };
