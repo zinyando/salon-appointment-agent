@@ -15,21 +15,32 @@ type DisplayResult = {
   selectedSlot: Slot;
   timeZone: string;
   status: "completed" | "error";
-  message?: string;
+  message: string;
 };
 
 type AvailabilityComponentProps = {
   args: DisplayArgs;
+  status: { type: string };
   result?: DisplayResult;
   addResult: (result: DisplayResult) => void;
 };
 
 const AvailabilityComponent = ({
   args,
+  status,
   result,
   addResult,
 }: AvailabilityComponentProps) => {
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
+  const [isConfirming, setIsConfirming] = useState(false);
+
+  if (status.type === "running") {
+    return (
+      <div className="p-4 mb-6 mt-6 bg-white rounded-lg shadow">
+        <p className="text-sm text-gray-500">Processing availability...</p>
+      </div>
+    );
+  }
 
   if (result?.status === "completed") {
     return (
@@ -87,14 +98,21 @@ const AvailabilityComponent = ({
     );
   }
 
-  const handleConfirmSelection = () => {
+  const handleConfirmSelection = async () => {
     if (!selectedTime) return;
+
+    setIsConfirming(true);
 
     const selectedSlot = args.availableSlots.find(
       (slot) => slot.time === selectedTime
     );
 
-    if (!selectedSlot) return;
+    if (!selectedSlot) {
+      setIsConfirming(false);
+      return;
+    }
+
+    await new Promise((resolve) => setTimeout(resolve, 1000));
 
     const resultSlot: Slot = {
       time: selectedSlot.time,
@@ -109,6 +127,7 @@ const AvailabilityComponent = ({
     };
 
     addResult(newResult);
+    setIsConfirming(false);
   };
 
   return (
@@ -148,10 +167,13 @@ const AvailabilityComponent = ({
               e.preventDefault();
               handleConfirmSelection();
             }}
-            className="cursor-pointer px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors w-full"
+            className={`cursor-pointer px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors w-full ${
+              isConfirming ? "opacity-50 cursor-not-allowed" : ""
+            }`}
             type="button"
+            disabled={isConfirming}
           >
-            Confirm Selection
+            {isConfirming ? "Confirming..." : "Confirm Selection"}
           </button>
         </div>
       )}
