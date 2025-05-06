@@ -33,15 +33,6 @@ export const displayCalComAvailability = createTool({
         })
       )
       .describe("List of available time slots."),
-    busySlots: z
-      .array(
-        z.object({
-          start: z.string().datetime(),
-          end: z.string().datetime(),
-        })
-      )
-      .optional()
-      .describe("List of busy time slots (optional, depends on API response)."),
     timeZone: z.string().describe("The time zone used for the slots."),
   }),
   outputSchema: z.object({

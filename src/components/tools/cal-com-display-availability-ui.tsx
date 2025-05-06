@@ -6,14 +6,8 @@ type Slot = {
   bookingUid?: string | null;
 };
 
-type BusySlot = {
-  start: string;
-  end: string;
-};
-
 type DisplayArgs = {
   availableSlots: Slot[];
-  busySlots?: BusySlot[];
   timeZone: string;
 };
 
@@ -55,16 +49,18 @@ const AvailabilityComponent = ({
               d="M5 13l4 4L19 7"
             />
           </svg>
-          <h3 className="text-lg font-medium text-gray-900">Time Slot Selected</h3>
+          <h3 className="text-lg font-medium text-gray-900">
+            Time Slot Selected
+          </h3>
         </div>
         <p className="mt-2 text-sm text-gray-500">
           {new Date(result.selectedSlot.time).toLocaleString([], {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-            hour: 'numeric',
-            minute: '2-digit'
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+            hour: "numeric",
+            minute: "2-digit",
           })}
         </p>
       </div>
