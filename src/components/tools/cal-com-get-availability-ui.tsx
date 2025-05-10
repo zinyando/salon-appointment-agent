@@ -211,7 +211,9 @@ const AvailabilityComponent = ({
         selectedSlot,
         timeZone,
         status: "completed",
-        message: `Selected appointment time: ${new Date(selectedSlot.time).toLocaleString([], {
+        message: `Selected appointment time: ${new Date(
+          selectedSlot.time
+        ).toLocaleString([], {
           weekday: "long",
           month: "long",
           day: "numeric",
