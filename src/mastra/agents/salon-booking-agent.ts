@@ -65,25 +65,45 @@ export const salonBookingAgent = new Agent({
 
     Current date and time: ${currentDateTime}
     
-    When checking appointment availability:
-    1. First, determine the appropriate start time, end time, and duration for the requested service. Convert user-provided dates/times (e.g., "tomorrow at 2pm") to UTC ISO 8601 format based on the current date and time: ${currentDateTime}.
-    2. Call the getCalComAvailability tool with the calculated start, end, and the eventTypeId '2381090'.
-    3. The getCalComAvailability tool will return a list of available time slots and the relevant time zone.
-    4. The getCalComAvailability tool will present the slots to the user for selection in a UI component.
+    Appointment Availability and Booking Flow:
+    1. When a user requests to check availability:
+       - First determine the appropriate time window based on the requested service duration
+       - Convert user-provided dates/times to ISO 8601 format
+       - Call getCalComAvailability with the start and end times
+       - The tool will display available slots in a UI component
+       - Tell the user to select their preferred time from the displayed slots
+       - Wait for the user's selection and confirmation
 
-    Booking an appointment:
-    1. After the user selects a time slot using the getCalComAvailability UI, the tool will return the selected slot.
-    2. Use the bookCalComAppointment tool to finalize the booking.
-    3. Pass the selected slot's 'time' as the 'start' argument, along with the user's 'name', 'email', and any relevant 'notes' or 'metadata' (like the service booked).
+    2. When the tool returns a selected slot:
+       - The user has ALREADY chosen and confirmed this time
+       - DO NOT ask if they want to book this time - they've already chosen it
+       - Simply collect the required booking information:
+         - Name
+         - Email
+         - Phone number (if needed)
+         - Any special requests
+       - Then use bookCalComAppointment to finalize the booking with:
+         - start: The selected slot's time
+         - name, email: Client's contact information
+         - notes: Any special requests
+         - metadata: Service details (type, duration, price)
 
     Checking Appointment Availability:
     When a client requests to book an appointment or check availability:
     
-    If the user specifies a specific time (e.g., "2 PM tomorrow", "next Tuesday at 3:00"):
-    1. Convert the requested time to UTC before checking availability
-    2. Use getCalComAvailability with a narrow time window (e.g., ±1 hour) around the requested time
-    3. If that exact time is not available, check the full day and suggest the closest available times
-    4. Always explain if the requested time is available or not before suggesting alternatives
+    Time Window Handling:
+    1. For specific time requests (e.g., "2 PM tomorrow", "next Tuesday at 3:00"):
+       - Convert the requested time to UTC
+       - First try a narrow window (±1 hour) using getCalComAvailability
+       - If no slots are returned, expand to full day and try again
+       - Let the UI component display available alternatives
+       - Wait for the user to select from the available slots
+
+    2. For general availability requests (e.g., "what's available tomorrow?"):
+       - Use a wider time window (full day)
+       - Call getCalComAvailability with the full window
+       - Let the UI component show all available slots
+       - Wait for user selection
     
     For general availability checks:
     1. Handle relative dates intelligently:

@@ -132,6 +132,7 @@ const AvailabilityComponent = ({
     );
   }
 
+  // If we've already selected a slot and returned it to the agent, show confirmation
   if (result?.status === "completed" && result.selectedSlot) {
     return (
       <div className="p-4 bg-white rounded-lg shadow border border-teal-200">
@@ -167,6 +168,15 @@ const AvailabilityComponent = ({
     );
   }
 
+  // Show any errors from the API call
+  if (error) {
+    return (
+      <div className="p-4 bg-red-50 rounded-lg">
+        <p className="text-red-600">{error}</p>
+      </div>
+    );
+  }
+
   if (availableSlots.length === 0 && !isLoading) {
     return (
       <div className="p-4 bg-yellow-50 rounded-lg">
@@ -192,14 +202,22 @@ const AvailabilityComponent = ({
         return;
       }
 
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // Brief delay to show confirming state
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
+      // Return the selected slot to the agent for booking
       const newResult: AvailabilityResult = {
-        availableSlots,
+        availableSlots: [], // Clear the slots since we've made a selection
         selectedSlot,
         timeZone,
         status: "completed",
-        message: `Slot for ${selectedSlot.time} selected and confirmed.`,
+        message: `Selected appointment time: ${new Date(selectedSlot.time).toLocaleString([], {
+          weekday: "long",
+          month: "long",
+          day: "numeric",
+          hour: "numeric",
+          minute: "2-digit",
+        })}`,
       };
 
       addResult(newResult);

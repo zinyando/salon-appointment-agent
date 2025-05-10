@@ -4,7 +4,7 @@ import { createTool } from "@mastra/core/tools";
 export const getCalComAvailability = createTool({
   id: "getCalComAvailability",
   description:
-    "Fetches available booking slots from Cal.com for a specific event type within a given time range.",
+    "Fetches available booking slots from Cal.com and displays them in a UI component that allows users to select and confirm their preferred appointment time. Returns the selected time slot for booking.",
   inputSchema: z.object({
     start: z
       .string()
