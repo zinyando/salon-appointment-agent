@@ -106,7 +106,7 @@ const AvailabilityComponent = ({
 
   if (status.type === "running" || isLoading) {
     return (
-      <div className="p-4 mb-6 mt-6 bg-white rounded-lg shadow">
+      <div className="p-6 my-8 bg-white rounded-lg shadow-md border border-gray-100">
         <p className="text-sm text-gray-500">
           Fetching available time slots...
         </p>
@@ -116,7 +116,7 @@ const AvailabilityComponent = ({
 
   if (error) {
     return (
-      <div className="p-4 bg-red-50 rounded-lg">
+      <div className="p-6 my-8 bg-red-50 rounded-lg border border-red-100">
         <p className="text-red-600">{error}</p>
       </div>
     );
@@ -124,7 +124,7 @@ const AvailabilityComponent = ({
 
   if (result?.status === "error") {
     return (
-      <div className="p-4 bg-red-50 rounded-lg">
+      <div className="p-6 my-8 bg-red-50 rounded-lg border border-red-100">
         <p className="text-red-600">
           {result?.message || "An error occurred while fetching availability."}
         </p>
@@ -135,7 +135,7 @@ const AvailabilityComponent = ({
   // If we've already selected a slot and returned it to the agent, show confirmation
   if (result?.status === "completed" && result.selectedSlot) {
     return (
-      <div className="p-4 bg-white rounded-lg shadow border border-teal-200">
+      <div className="p-6 my-8 bg-white rounded-lg shadow-md border border-teal-200">
         <div className="flex items-center gap-2">
           <svg
             className="w-5 h-5 text-teal-500"
@@ -171,7 +171,7 @@ const AvailabilityComponent = ({
   // Show any errors from the API call
   if (error) {
     return (
-      <div className="p-4 bg-red-50 rounded-lg">
+      <div className="p-6 my-8 bg-red-50 rounded-lg border border-red-100">
         <p className="text-red-600">{error}</p>
       </div>
     );
@@ -179,7 +179,7 @@ const AvailabilityComponent = ({
 
   if (availableSlots.length === 0 && !isLoading) {
     return (
-      <div className="p-4 bg-yellow-50 rounded-lg">
+      <div className="p-6 my-8 bg-yellow-50 rounded-lg border border-yellow-100">
         <p className="text-yellow-600">
           No available slots found for the selected time range.
         </p>
