@@ -86,12 +86,12 @@ const ThreadWelcomeSuggestions: FC = () => {
     <div className="mt-3 grid w-full grid-cols-2 gap-4 px-4">
       <ThreadPrimitive.Suggestion
         className="cursor-pointer hover:bg-teal-700 flex max-w-sm grow basis-0 flex-col items-center justify-center rounded-lg border border-teal-600 bg-teal-600 p-3 transition-colors ease-in text-white"
-        prompt="I want to book a haircut appointment"
+        prompt="Show me available appointments for the next time you are open."
         method="replace"
         autoSend
       >
         <span className="line-clamp-2 text-ellipsis text-sm font-semibold">
-          Book a haircut
+          Next Available Times
         </span>
       </ThreadPrimitive.Suggestion>
       <ThreadPrimitive.Suggestion
