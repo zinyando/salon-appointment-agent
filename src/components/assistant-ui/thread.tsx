@@ -73,9 +73,7 @@ const ThreadWelcome: FC = () => {
     <ThreadPrimitive.Empty>
       <div className="flex w-full max-w-[var(--thread-max-width)] flex-grow flex-col">
         <div className="flex w-full flex-grow flex-col items-center justify-center">
-          <p className="mt-4 font-medium">
-            How can I help you today?
-          </p>
+          <p className="mt-4 font-medium">How can I help you today?</p>
         </div>
         <ThreadWelcomeSuggestions />
       </div>
@@ -87,7 +85,7 @@ const ThreadWelcomeSuggestions: FC = () => {
   return (
     <div className="mt-3 grid w-full grid-cols-2 gap-4 px-4">
       <ThreadPrimitive.Suggestion
-        className="hover:bg-muted/80 flex max-w-sm grow basis-0 flex-col items-center justify-center rounded-lg border p-3 transition-colors ease-in"
+        className="cursor-pointer hover:bg-teal-700 flex max-w-sm grow basis-0 flex-col items-center justify-center rounded-lg border border-teal-600 bg-teal-600 p-3 transition-colors ease-in text-white"
         prompt="I want to book a haircut appointment"
         method="replace"
         autoSend
@@ -97,7 +95,7 @@ const ThreadWelcomeSuggestions: FC = () => {
         </span>
       </ThreadPrimitive.Suggestion>
       <ThreadPrimitive.Suggestion
-        className="hover:bg-muted/80 flex max-w-sm grow basis-0 flex-col items-center justify-center rounded-lg border p-3 transition-colors ease-in"
+        className="cursor-pointer hover:bg-teal-700 flex max-w-sm grow basis-0 flex-col items-center justify-center rounded-lg border border-teal-600 bg-teal-600 p-3 transition-colors ease-in text-white"
         prompt="What services do you offer?"
         method="replace"
         autoSend
@@ -107,7 +105,7 @@ const ThreadWelcomeSuggestions: FC = () => {
         </span>
       </ThreadPrimitive.Suggestion>
       <ThreadPrimitive.Suggestion
-        className="hover:bg-muted/80 flex max-w-sm grow basis-0 flex-col items-center justify-center rounded-lg border p-3 transition-colors ease-in"
+        className="cursor-pointer hover:bg-teal-700 flex max-w-sm grow basis-0 flex-col items-center justify-center rounded-lg border border-teal-600 bg-teal-600 p-3 transition-colors ease-in text-white"
         prompt="What are your business hours?"
         method="replace"
         autoSend
@@ -117,7 +115,7 @@ const ThreadWelcomeSuggestions: FC = () => {
         </span>
       </ThreadPrimitive.Suggestion>
       <ThreadPrimitive.Suggestion
-        className="hover:bg-muted/80 flex max-w-sm grow basis-0 flex-col items-center justify-center rounded-lg border p-3 transition-colors ease-in"
+        className="cursor-pointer hover:bg-teal-700 flex max-w-sm grow basis-0 flex-col items-center justify-center rounded-lg border border-teal-600 bg-teal-600 p-3 transition-colors ease-in text-white"
         prompt="How much does a haircut cost?"
         method="replace"
         autoSend
@@ -268,7 +266,10 @@ const BranchPicker: FC<BranchPickerPrimitive.Root.Props> = ({
   return (
     <BranchPickerPrimitive.Root
       hideWhenSingleBranch
-      className={cn("text-muted-foreground inline-flex items-center text-xs", className)}
+      className={cn(
+        "text-muted-foreground inline-flex items-center text-xs",
+        className
+      )}
       {...rest}
     >
       <BranchPickerPrimitive.Previous asChild>
