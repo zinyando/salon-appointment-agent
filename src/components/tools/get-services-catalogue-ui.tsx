@@ -183,26 +183,38 @@ const CatalogueComponent = ({
         catalogue.map((category) => (
           <div
             key={category.category}
-            className="rounded-lg border bg-card p-4 text-card-foreground shadow-sm"
+            className="rounded-xl border bg-gradient-to-b from-white to-gray-50/50 p-6 text-card-foreground shadow-md transition-shadow hover:shadow-lg"
           >
-            <h3 className="mb-4 text-lg font-semibold">{category.category}</h3>
-            <div className="divide-y">
+            <div className="mb-6 flex items-center justify-between border-b border-gray-100 pb-4">
+              <h3 className="text-xl font-semibold tracking-tight text-gray-900">{category.category}</h3>
+              <div className="rounded-full bg-teal-50 px-3 py-1 text-sm font-medium text-teal-700">
+                {category.services.length} Services
+              </div>
+            </div>
+            <div className="space-y-4">
               {category.services.map((service) => (
                 <button
                   key={service.service}
                   onClick={() => handleServiceSelect(category, service)}
-                  className="cursor-pointer w-full text-left transition-colors hover:bg-accent hover:text-accent-foreground"
+                  className="group w-full cursor-pointer rounded-lg border border-gray-100 bg-white p-4 text-left transition-all hover:border-teal-200 hover:bg-teal-50/30 hover:shadow-sm"
                 >
-                  <div className="flex flex-col gap-1 py-3 first:pt-0 last:pb-0">
+                  <div className="flex flex-col gap-2">
                     <div className="flex items-center justify-between">
-                      <span className="font-medium">{service.service}</span>
-                      <span className="text-muted-foreground">
+                      <span className="font-semibold text-gray-900 group-hover:text-teal-700">
+                        {service.service}
+                      </span>
+                      <span className="rounded-md bg-gray-100 px-3 py-1 text-sm font-medium text-gray-900 group-hover:bg-teal-100 group-hover:text-teal-700">
                         {service.price}
                       </span>
                     </div>
-                    <div className="flex items-center justify-between text-sm text-muted-foreground">
-                      <span>{service.description}</span>
-                      <span>{service.duration}</span>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-gray-600">{service.description}</span>
+                      <span className="ml-4 flex items-center text-gray-500">
+                        <svg className="mr-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        {service.duration}
+                      </span>
                     </div>
                   </div>
                 </button>
