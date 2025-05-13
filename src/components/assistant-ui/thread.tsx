@@ -4,8 +4,10 @@ import {
   ComposerPrimitive,
   MessagePrimitive,
   ThreadPrimitive,
+  useThreadRuntime,
+  ExportedMessageRepository,
 } from "@assistant-ui/react";
-import type { FC } from "react";
+import { FC, useEffect } from "react";
 import {
   ArrowDownIcon,
   CheckIcon,
@@ -23,6 +25,17 @@ import { MarkdownText } from "@/components/assistant-ui/markdown-text";
 import { TooltipIconButton } from "@/components/assistant-ui/tooltip-icon-button";
 
 export const Thread: FC = () => {
+  const threadRuntime = useThreadRuntime();
+
+  useEffect(() => {
+    const handlePopState = () => {
+      threadRuntime.import(ExportedMessageRepository.fromArray([]));
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  });
+
   return (
     <ThreadPrimitive.Root
       className="bg-background box-border flex h-full flex-col overflow-hidden"
@@ -82,6 +95,9 @@ const ThreadWelcome: FC = () => {
 };
 
 const ThreadWelcomeSuggestions: FC = () => {
+  const navigate = () => {
+    history.pushState({}, "", window.location.pathname);
+  };
   return (
     <div className="mt-3 grid w-full grid-cols-2 gap-4 px-4">
       <ThreadPrimitive.Suggestion
@@ -89,6 +105,7 @@ const ThreadWelcomeSuggestions: FC = () => {
         prompt="I'd like to book an appointment"
         method="replace"
         autoSend
+        onClick={navigate}
       >
         <span className="line-clamp-2 text-ellipsis text-sm font-semibold">
           Book an appointment
@@ -99,6 +116,7 @@ const ThreadWelcomeSuggestions: FC = () => {
         prompt="What services do you offer?"
         method="replace"
         autoSend
+        onClick={navigate}
       >
         <span className="line-clamp-2 text-ellipsis text-sm font-semibold">
           View services
@@ -109,6 +127,7 @@ const ThreadWelcomeSuggestions: FC = () => {
         prompt="What are your business hours?"
         method="replace"
         autoSend
+        onClick={navigate}
       >
         <span className="line-clamp-2 text-ellipsis text-sm font-semibold">
           Business hours
@@ -119,6 +138,7 @@ const ThreadWelcomeSuggestions: FC = () => {
         prompt="How much does a haircut cost?"
         method="replace"
         autoSend
+        onClick={navigate}
       >
         <span className="line-clamp-2 text-ellipsis text-sm font-semibold">
           Service prices
