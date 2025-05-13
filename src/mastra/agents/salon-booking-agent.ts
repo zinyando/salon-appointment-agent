@@ -2,6 +2,7 @@ import { Agent } from "@mastra/core/agent";
 import { openai } from "@ai-sdk/openai";
 import { getCalComAvailability } from "@/mastra/tools/cal-com-get-availability-tool";
 import { bookCalComAppointment } from "@/mastra/tools/cal-com-booking-tool";
+import { getServicesCatalogue } from "@/mastra/tools/get-services-catalogue";
 
 const currentDateTime = new Date().toISOString();
 
@@ -21,40 +22,6 @@ export const salonBookingAgent = new Agent({
   - Handling appointment modifications and cancellations
   - Sending confirmations and reminders
   - Capturing and addressing special requests or accommodations
-
-  ## Service Catalog
-
-  ### Haircuts
-
-  | Service          | Price   | Duration | Description                        |
-  |-----------------|---------|----------|---------------------------------|
-  | Men's Haircut    | $30     | 30 min   | Consultation, wash, cut, and style |
-  | Women's Haircut  | $50-$70 | 60 min   | Consultation, wash, cut, and style |
-  | Children's Haircut| $25     | 30 min   | Ages 12 and under                 |
-
-  ### Color Services
-
-  | Service             | Price  | Duration | Description                          |
-  |--------------------|--------|----------|--------------------------------------|
-  | Root Touch-up       | $75    | 90 min   | Single color application at the roots |
-  | Full Color         | $100+  | 2-3 hrs  | All-over color application           |
-  | Highlights/Lowlights| $120+  | 2-3 hrs  | Partial or full foil options         |
-  | Balayage           | $150+  | 3+ hrs   | Hand-painted highlights for natural look |
-
-  ### Treatments
-
-  | Service            | Price  | Duration | Description                         |
-  |-------------------|--------|----------|-------------------------------------|
-  | Deep Conditioning  | $25    | 30 min   | Intensive treatment for damaged hair |
-  | Keratin Treatment | $200+  | 2-3 hrs  | Long-lasting smoothing treatment     |
-
-  ### Styling
-
-  | Service           | Price  | Duration | Description                        |
-  |------------------|--------|----------|---------------------------------|
-  | Blow Dry & Style | $35    | 30 min   | Professional blowout and styling  |
-  | Special Occasion  | $65+   | 60 min   | Formal styling for events         |
-  | Bridal Hair      | $100+  | 90 min   | Includes consultation and trial   |
 
   ## Salon Policies
   ### Business Hours
@@ -160,9 +127,21 @@ export const salonBookingAgent = new Agent({
     - Convert to absolute dates based on current date
     - Account for business hours and service duration
 
-  ### CalCom Tool Integration
+  ### Tool Integration
 
-  1. getCalComAvailability:
+  1. getServicesCatalogue:
+    - Purpose: Fetch the current salon services catalogue
+    - Required parameters: None
+    - Behavior: Displays UI component with all services grouped by category
+    - Response: Returns catalogue data containing:
+      - Service categories (Haircuts, Color Services, etc.)
+      - Service details (name, price, duration, description)
+    - Usage:
+      - Call this tool when discussing services or prices
+      - Use the returned data to provide accurate information
+      - Reference the catalogue when booking appointments
+
+  2. getCalComAvailability:
     - Purpose: Display available appointment slots
     - Required parameters:
       - start: ISO 8601 timestamp for window start
@@ -170,7 +149,7 @@ export const salonBookingAgent = new Agent({
     - Behavior: Displays UI component with selectable time slots
     - Response: Client selects preferred slot from UI
 
-  2. bookCalComAppointment:
+  3. bookCalComAppointment:
     - Purpose: Finalize appointment booking
     - Required parameters:
       - start: ISO 8601 timestamp for appointment start
@@ -224,5 +203,6 @@ export const salonBookingAgent = new Agent({
   tools: {
     getCalComAvailability,
     bookCalComAppointment,
+    getServicesCatalogue,
   },
 });
