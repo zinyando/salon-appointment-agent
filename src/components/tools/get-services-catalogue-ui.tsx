@@ -97,7 +97,9 @@ const CatalogueComponent = ({
   };
 
   if (isLoading) {
-    return <div className="text-muted-foreground">Loading services catalogue...</div>;
+    return (
+      <div className="text-muted-foreground">Loading services catalogue...</div>
+    );
   }
 
   if (error) {
@@ -162,29 +164,41 @@ const CatalogueComponent = ({
             </div>
           </div>
           <div className="flex gap-3">
-            <Button onClick={handleConfirm} className="flex-1 bg-teal-600 text-white hover:bg-teal-700">
+            <Button
+              onClick={handleConfirm}
+              className="cursor-pointer flex-1 bg-teal-600 text-white hover:bg-teal-700"
+            >
               Confirm Selection
             </Button>
-            <Button onClick={handleCancel} variant="outline" className="flex-1 border-teal-600 text-teal-600 hover:bg-teal-50 hover:text-teal-700">
+            <Button
+              onClick={handleCancel}
+              variant="outline"
+              className="cursor-pointer flex-1 border-teal-600 text-teal-600 hover:bg-teal-50 hover:text-teal-700"
+            >
               Choose Different Service
             </Button>
           </div>
         </div>
       ) : (
         catalogue.map((category) => (
-          <div key={category.category} className="rounded-lg border bg-card p-4 text-card-foreground shadow-sm">
+          <div
+            key={category.category}
+            className="rounded-lg border bg-card p-4 text-card-foreground shadow-sm"
+          >
             <h3 className="mb-4 text-lg font-semibold">{category.category}</h3>
             <div className="divide-y">
               {category.services.map((service) => (
                 <button
                   key={service.service}
                   onClick={() => handleServiceSelect(category, service)}
-                  className="w-full text-left transition-colors hover:bg-accent hover:text-accent-foreground"
+                  className="cursor-pointer w-full text-left transition-colors hover:bg-accent hover:text-accent-foreground"
                 >
                   <div className="flex flex-col gap-1 py-3 first:pt-0 last:pb-0">
                     <div className="flex items-center justify-between">
                       <span className="font-medium">{service.service}</span>
-                      <span className="text-muted-foreground">{service.price}</span>
+                      <span className="text-muted-foreground">
+                        {service.price}
+                      </span>
                     </div>
                     <div className="flex items-center justify-between text-sm text-muted-foreground">
                       <span>{service.description}</span>
