@@ -97,11 +97,11 @@ const CatalogueComponent = ({
   };
 
   if (isLoading) {
-    return <div className="text-gray-500">Loading services catalogue...</div>;
+    return <div className="text-muted-foreground">Loading services catalogue...</div>;
   }
 
   if (error) {
-    return <div className="text-red-500">{error}</div>;
+    return <div className="text-destructive">{error}</div>;
   }
 
   if (!catalogue.length) {
@@ -111,10 +111,10 @@ const CatalogueComponent = ({
   // Show success confirmation after service is selected
   if (result?.status === "selected" && result.selectedService) {
     return (
-      <div className="p-6 my-8 bg-white rounded-lg shadow-md border border-teal-200">
+      <div className="my-8 rounded-lg border border-teal-200 bg-white p-6 shadow-md">
         <div className="flex items-center gap-2">
           <svg
-            className="w-5 h-5 text-teal-500"
+            className="h-5 w-5 text-teal-500"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -130,8 +130,8 @@ const CatalogueComponent = ({
             Service Selected
           </h3>
         </div>
-        <div className="mt-2 text-sm text-gray-500 space-y-1">
-          <p className="font-medium text-gray-900">
+        <div className="mt-2 space-y-1 text-sm text-muted-foreground">
+          <p className="font-medium text-foreground">
             {result.selectedService.service}
           </p>
           <p>{result.selectedService.category}</p>
@@ -146,47 +146,47 @@ const CatalogueComponent = ({
   return (
     <div className="space-y-6">
       {isConfirming && selectedService ? (
-        <div className="rounded-lg border p-4">
+        <div className="rounded-lg border bg-card p-4 text-card-foreground shadow-sm">
           <h3 className="mb-4 text-lg font-semibold">
             Confirm Service Selection
           </h3>
           <div className="mb-4">
             <div className="font-medium">{selectedService.service.service}</div>
-            <div className="text-gray-600">
+            <div className="text-muted-foreground">
               {selectedService.category.category} -{" "}
               {selectedService.service.price}
             </div>
-            <div className="text-sm text-gray-500 mt-2">
+            <div className="mt-2 text-sm text-muted-foreground">
               <div>{selectedService.service.description}</div>
               <div>Duration: {selectedService.service.duration}</div>
             </div>
           </div>
           <div className="flex gap-3">
-            <Button onClick={handleConfirm} className="flex-1">
+            <Button onClick={handleConfirm} className="flex-1 bg-teal-600 text-white hover:bg-teal-700">
               Confirm Selection
             </Button>
-            <Button onClick={handleCancel} variant="outline" className="flex-1">
+            <Button onClick={handleCancel} variant="outline" className="flex-1 border-teal-600 text-teal-600 hover:bg-teal-50 hover:text-teal-700">
               Choose Different Service
             </Button>
           </div>
         </div>
       ) : (
         catalogue.map((category) => (
-          <div key={category.category} className="rounded-lg border p-4">
+          <div key={category.category} className="rounded-lg border bg-card p-4 text-card-foreground shadow-sm">
             <h3 className="mb-4 text-lg font-semibold">{category.category}</h3>
             <div className="divide-y">
               {category.services.map((service) => (
                 <button
                   key={service.service}
                   onClick={() => handleServiceSelect(category, service)}
-                  className="w-full text-left hover:bg-gray-50 transition-colors"
+                  className="w-full text-left transition-colors hover:bg-accent hover:text-accent-foreground"
                 >
                   <div className="flex flex-col gap-1 py-3 first:pt-0 last:pb-0">
                     <div className="flex items-center justify-between">
                       <span className="font-medium">{service.service}</span>
-                      <span className="text-gray-600">{service.price}</span>
+                      <span className="text-muted-foreground">{service.price}</span>
                     </div>
-                    <div className="flex items-center justify-between text-sm text-gray-500">
+                    <div className="flex items-center justify-between text-sm text-muted-foreground">
                       <span>{service.description}</span>
                       <span>{service.duration}</span>
                     </div>
