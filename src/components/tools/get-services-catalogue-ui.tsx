@@ -146,11 +146,14 @@ const CatalogueComponent = ({
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 mt-8">
       <div className="text-center">
-        <h2 className="text-2xl font-semibold tracking-tight text-gray-900">Select Your Service</h2>
+        <h2 className="text-2xl font-semibold tracking-tight text-gray-900">
+          Select Your Service
+        </h2>
         <p className="mt-2 text-muted-foreground">
-          Choose from our range of professional salon services tailored to your needs
+          Choose from our range of professional salon services tailored to your
+          needs
         </p>
       </div>
       {isConfirming && selectedService ? (
@@ -192,7 +195,9 @@ const CatalogueComponent = ({
             className="rounded-xl border bg-gradient-to-b from-white to-gray-50/50 p-6 text-card-foreground shadow-md transition-shadow hover:shadow-lg"
           >
             <div className="mb-6 flex items-center justify-between border-b border-gray-100 pb-4">
-              <h3 className="text-xl font-semibold tracking-tight text-gray-900">{category.category}</h3>
+              <h3 className="text-xl font-semibold tracking-tight text-gray-900">
+                {category.category}
+              </h3>
               <div className="rounded-full bg-teal-50 px-3 py-1 text-sm font-medium text-teal-700">
                 {category.services.length} Services
               </div>
@@ -214,10 +219,22 @@ const CatalogueComponent = ({
                       </span>
                     </div>
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-600">{service.description}</span>
+                      <span className="text-gray-600">
+                        {service.description}
+                      </span>
                       <span className="ml-4 flex items-center text-gray-500">
-                        <svg className="mr-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        <svg
+                          className="mr-1 h-4 w-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                          />
                         </svg>
                         {service.duration}
                       </span>
