@@ -133,13 +133,9 @@ export const salonBookingAgent = new Agent({
     - Purpose: Fetch the current salon services catalogue
     - Required parameters: None
     - Behavior: Displays UI component with all services grouped by category
-    - Response: Returns catalogue data containing:
-      - Service categories (Haircuts, Color Services, etc.)
-      - Service details (name, price, duration, description)
+    - Response: Clients Selects preferred service details
     - Usage:
       - Call this tool when discussing services or prices
-      - Use the returned data to provide accurate information
-      - Reference the catalogue when booking appointments
 
   2. getCalComAvailability:
     - Purpose: Display available appointment slots

@@ -62,7 +62,6 @@ const CatalogueComponent = ({
       }
     };
 
-    console.log("Status", status);
     if (!result?.catalogue?.length && status.type === "requires-action") {
       fetchCatalogue();
     } else if (result?.catalogue?.length) {
@@ -88,6 +87,7 @@ const CatalogueComponent = ({
         ...selectedService.service,
       },
       status: "selected",
+      message: `Selected ${selectedService.service.service} (${selectedService.category.category}) - ${selectedService.service.price} for ${selectedService.service.duration}`,
     });
   };
 
@@ -106,6 +106,41 @@ const CatalogueComponent = ({
 
   if (!catalogue.length) {
     return null;
+  }
+
+  // Show success confirmation after service is selected
+  if (result?.status === "selected" && result.selectedService) {
+    return (
+      <div className="p-6 my-8 bg-white rounded-lg shadow-md border border-teal-200">
+        <div className="flex items-center gap-2">
+          <svg
+            className="w-5 h-5 text-teal-500"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M5 13l4 4L19 7"
+            />
+          </svg>
+          <h3 className="text-lg font-medium text-gray-900">
+            Service Selected
+          </h3>
+        </div>
+        <div className="mt-2 text-sm text-gray-500 space-y-1">
+          <p className="font-medium text-gray-900">
+            {result.selectedService.service}
+          </p>
+          <p>{result.selectedService.category}</p>
+          <p>Price: {result.selectedService.price}</p>
+          <p>Duration: {result.selectedService.duration}</p>
+          <p className="mt-2">{result.selectedService.description}</p>
+        </div>
+      </div>
+    );
   }
 
   return (

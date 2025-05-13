@@ -16,7 +16,7 @@ const ServiceCategorySchema = z.object({
 export const getServicesCatalogue = createTool({
   id: "getServicesCatalogue",
   description:
-    "Get the salon services catalogue with pricing and duration information",
+    "Displays a UI component showing all available salon services grouped by category, allowing users to view details and select a service. Returns the selected service with its category, price, duration, and description for booking.",
   inputSchema: z.object({}),
   outputSchema: z.object({
     catalogue: z.array(ServiceCategorySchema),
