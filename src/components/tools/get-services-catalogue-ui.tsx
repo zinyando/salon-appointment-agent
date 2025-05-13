@@ -147,6 +147,12 @@ const CatalogueComponent = ({
 
   return (
     <div className="space-y-6">
+      <div className="text-center">
+        <h2 className="text-2xl font-semibold tracking-tight text-gray-900">Select Your Service</h2>
+        <p className="mt-2 text-muted-foreground">
+          Choose from our range of professional salon services tailored to your needs
+        </p>
+      </div>
       {isConfirming && selectedService ? (
         <div className="rounded-lg border bg-card p-4 text-card-foreground shadow-sm">
           <h3 className="mb-4 text-lg font-semibold">
