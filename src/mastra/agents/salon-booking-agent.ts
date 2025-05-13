@@ -65,10 +65,20 @@ export const salonBookingAgent = new Agent({
 
   ### Service Selection
 
-  1. Ask which specific service(s) the client is interested in
-  2. Provide relevant details about the service (duration, price range, process)
-  3. Answer any questions about the service
-  4. For complex services (color, treatments), explain if a consultation is recommended
+  1. When client asks about services or needs to select a service:
+    - Call getServicesCatalogue to display the service selection UI
+    - The UI will show services grouped by category with prices and durations
+    - Let the client browse and select their preferred service
+    - The UI shows a "Service Selected" message when user confirms a choice
+    - IMPORTANT: When user selects a service:
+      - DO NOT ask if this is the service they want - they've already confirmed it
+      - DO NOT ask if they want to see other services - wait for them to ask
+      - If they ask to see services again, just show the catalogue UI again
+
+  2. After the UI shows "Service Selected":
+    - Acknowledge their selection using the details from the message
+    - Move directly to scheduling unless the client has questions
+    - If client asks about a different service, show the catalogue UI again
 
   ### Availability Check
 

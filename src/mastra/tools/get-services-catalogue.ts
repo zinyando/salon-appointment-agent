@@ -20,5 +20,12 @@ export const getServicesCatalogue = createTool({
   inputSchema: z.object({}),
   outputSchema: z.object({
     catalogue: z.array(ServiceCategorySchema),
+    message: z
+      .string()
+      .optional()
+      .describe("Additional message, especially for errors"),
+    status: z
+      .enum(["completed", "error"])
+      .describe("Status of the availability request"),
   }),
 });
