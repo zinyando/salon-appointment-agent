@@ -1,5 +1,5 @@
 import { makeAssistantToolUI } from "@assistant-ui/react";
-import { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { DayPicker } from "react-day-picker";
 import { format, startOfDay, endOfDay } from "date-fns";
 import "react-day-picker/dist/style.css";
@@ -36,7 +36,7 @@ const AvailabilityComponent = ({
   status,
   result,
   addResult,
-}: AvailabilityComponentProps) => {
+}: AvailabilityComponentProps): React.ReactElement => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
@@ -46,58 +46,54 @@ const AvailabilityComponent = ({
   const [selectedDate, setSelectedDate] = useState<Date | undefined>();
 
   const fetchAvailability = useCallback(async (date: Date) => {
-      setIsLoading(true);
-      setError(null);
-      try {
-        const start = startOfDay(date).toISOString();
-        const end = endOfDay(date).toISOString();
+    setIsLoading(true);
+    setError(null);
+    try {
+      const start = startOfDay(date).toISOString();
+      const end = endOfDay(date).toISOString();
 
-        const searchParams = new URLSearchParams();
-        searchParams.append("start", start);
-        searchParams.append("end", end);
+      const searchParams = new URLSearchParams();
+      searchParams.append("start", start);
+      searchParams.append("end", end);
 
-        const response = await fetch(`/api/cal-availability?${searchParams}`, {
-          headers: {
-            "Content-Type": "application/json",
-            "cal-api-version": "2024-09-04",
-          },
-        });
+      const response = await fetch(`/api/cal-availability?${searchParams}`, {
+        headers: {
+          "Content-Type": "application/json",
+          "cal-api-version": "2024-09-04",
+        },
+      });
 
-        if (!response.ok) {
-          const errorData = await response.json().catch(() => ({}));
-          throw new Error(
-            `Failed to fetch availability: ${errorData?.error || response.statusText}`
-          );
-        }
-
-        const data = await response.json();
-
-        if (!data.availableSlots || !Array.isArray(data.availableSlots)) {
-          throw new Error("Invalid response format from availability API");
-        }
-
-        // Store the fetched slots in local state
-        setAvailableSlots(data.availableSlots);
-        setTimeZone(data.timeZone || "UTC");
-      } catch (err) {
-        console.error("Availability fetch error:", err);
-        setError(
-          err instanceof Error
-            ? err.message
-            : "An unexpected error occurred while fetching availability."
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(
+          `Failed to fetch availability: ${errorData?.error || response.statusText}`
         );
+      }
 
-        addResult({
-          availableSlots: [],
-          timeZone: "UTC",
-          status: "error",
-          message:
-            err instanceof Error ? err.message : "Failed to fetch availability",
-        });
-      } finally {
-        setIsLoading(false);
-      };
-    }, [addResult]);
+      const data = await response.json();
+
+      if (!data.availableSlots || !Array.isArray(data.availableSlots)) {
+        throw new Error("Invalid response format from availability API");
+      }
+
+      // Store the fetched slots in local state
+      setAvailableSlots(data.availableSlots);
+      setTimeZone(data.timeZone || "UTC");
+    } catch (err) {
+      console.error("Availability fetch error:", err);
+      const errorMessage = err instanceof Error ? err.message : "An unexpected error occurred while fetching availability.";
+      setError(errorMessage);
+
+      addResult({
+        availableSlots: [],
+        timeZone: "UTC",
+        status: "error",
+        message: errorMessage,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }, [addResult]);
 
   useEffect(() => {
     if (selectedDate) {
@@ -112,11 +108,11 @@ const AvailabilityComponent = ({
     }
   }, [status.type, isLoading, result, selectedDate]);
 
-  if (status.type === "running" || isLoading) {
+  if (status.type === "running" && !selectedDate) {
     return (
       <div className="p-6 my-8 bg-white rounded-lg shadow-md border border-gray-100">
         <p className="text-sm text-gray-500">
-          Fetching available time slots...
+          Initializing booking assistant...
         </p>
       </div>
     );
@@ -176,154 +172,124 @@ const AvailabilityComponent = ({
     );
   }
 
-  // Show any errors from the API call
-  if (error) {
-    return (
-      <div className="p-6 my-8 bg-red-50 rounded-lg border border-red-100">
-        <p className="text-red-600">{error}</p>
-      </div>
-    );
-  }
-
-  if (availableSlots.length === 0 && !isLoading) {
-    return (
-      <div className="p-6 my-8 bg-yellow-50 rounded-lg border border-yellow-100">
-        <p className="text-yellow-600">
-          No available slots found for the selected time range.
-        </p>
-      </div>
-    );
-  }
-
   const handleDateSelect = (date: Date | undefined) => {
     if (date) {
       setSelectedDate(date);
-      setSelectedTime(null); // Reset selected time when date changes
-      setAvailableSlots([]); // Reset available slots
-      setError(null); // Reset any errors
+      setSelectedTime(null);
+      setAvailableSlots([]);
+      setError(null);
     }
   };
 
-  // Calendar and time slots view
-  if (status.type === "running" || !result?.status) {
-    return (
-      <div className="space-y-6 p-4 bg-white rounded-lg shadow-md border border-gray-100">
-        <div className="flex flex-col items-center space-y-4">
-          <h3 className="text-lg font-semibold">Select a Date</h3>
-          <DayPicker
-            mode="single"
-            selected={selectedDate}
-            onSelect={handleDateSelect}
-            disabled={[{ before: new Date() }]}
-            className="border rounded-lg p-3"
-          />
-        </div>
+  const handleConfirmSelection = async () => {
+    if (!selectedTime) return;
+    setIsConfirming(true);
+    const selectedSlot = availableSlots.find(
+      (slot) => slot.time === selectedTime
+    );
 
-        {selectedDate && (
-          <div className="mt-6">
-            <h4 className="font-medium text-gray-900 mb-4">
-              Available times for {format(selectedDate, "EEEE, MMMM d")}
-            </h4>
-            {isLoading ? (
-              <p className="text-sm text-gray-500">Loading available times...</p>
-            ) : availableSlots.length > 0 ? (
-              <div>
-                {(() => {
-                  const handleConfirmSelection = async () => {
-      if (!selectedTime) return;
+    if (!selectedSlot) {
+      setIsConfirming(false);
+      return;
+    }
 
-      setIsConfirming(true);
+    await new Promise((resolve) => setTimeout(resolve, 500));
 
-      const selectedSlot = availableSlots.find(
-        (slot) => slot.time === selectedTime
-      );
+    const newResult: AvailabilityResult = {
+      availableSlots: [],
+      selectedSlot,
+      timeZone,
+      status: "completed",
+      message: `Selected appointment time: ${new Date(
+        selectedSlot.time
+      ).toLocaleString([], {
+        weekday: "long",
+        month: "long",
+        day: "numeric",
+        hour: "numeric",
+        minute: "2-digit",
+      })}`,
+    };
 
-      if (!selectedSlot) {
-        setIsConfirming(false);
-        return;
-      }
+    addResult(newResult);
+    setIsConfirming(false);
+  };
 
-      // Brief delay to show confirming state
-      await new Promise((resolve) => setTimeout(resolve, 500));
+  return (
+    <div className="space-y-6 p-4 bg-white rounded-lg shadow-md border border-gray-100">
+      <div className="flex flex-col items-center space-y-4">
+        <h3 className="text-lg font-semibold">Select a Date</h3>
+        <DayPicker
+          mode="single"
+          selected={selectedDate}
+          onSelect={handleDateSelect}
+          disabled={[{ before: new Date() }]}
+          className="border rounded-lg p-3"
+        />
+      </div>
 
-      // Return the selected slot to the agent for booking
-      const newResult: AvailabilityResult = {
-        availableSlots: [], // Clear the slots since we've made a selection
-        selectedSlot,
-        timeZone,
-        status: "completed",
-        message: `Selected appointment time: ${new Date(
-          selectedSlot.time
-        ).toLocaleString([], {
-          weekday: "long",
-          month: "long",
-          day: "numeric",
-          hour: "numeric",
-          minute: "2-digit",
-        })}`,
-      };
-
-      addResult(newResult);
-                    setIsConfirming(false);
-                  };
+      {selectedDate && (
+        <div className="mt-6">
+          <h4 className="font-medium text-gray-900 mb-4">
+            Available times for {format(selectedDate, "EEEE, MMMM d")}
+          </h4>
+          {isLoading ? (
+            <p className="text-sm text-gray-500">Loading available times...</p>
+          ) : availableSlots.length === 0 ? (
+            <div className="p-4 bg-yellow-50 rounded-lg border border-yellow-100">
+              <p className="text-yellow-600">
+                No available slots found for the selected time range.
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <div className="grid grid-cols-3 gap-2">
+                {availableSlots.map((slot) => {
+                  const slotTime = new Date(slot.time);
+                  const isSelected = selectedTime === slot.time;
 
                   return (
-                    <div>
-                      <div className="grid grid-cols-3 gap-2">
-                        {availableSlots.map((slot) => {
-                          const slotTime = new Date(slot.time);
-                          const isSelected = selectedTime === slot.time;
-
-                          return (
-                            <button
-                              key={slot.time}
-                              onClick={() => setSelectedTime(slot.time)}
-                              className={`cursor-pointer p-2 rounded-lg text-sm ${
-                                isSelected
-                                  ? "bg-teal-600 text-white"
-                                  : "bg-gray-100 hover:bg-gray-200"
-                              }`}
-                            >
-                              {slotTime.toLocaleTimeString([], {
-                                hour: "numeric",
-                                minute: "2-digit",
-                              })}
-                            </button>
-                          );
-                        })}
-                      </div>
-
-                      {selectedTime && (
-                        <div className="mt-4 space-y-3">
-                          <button
-                            onClick={(e) => {
-                              e.preventDefault();
-                              handleConfirmSelection();
-                            }}
-                            className={`cursor-pointer px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors w-full ${
-                              isConfirming ? "opacity-50 cursor-not-allowed" : ""
-                            }`}
-                            type="button"
-                            disabled={isConfirming}
-                          >
-                            {isConfirming ? "Confirming..." : "Confirm Selection"}
-                          </button>
-                        </div>
-                      )}
-                    </div>
+                    <button
+                      key={slot.time}
+                      onClick={() => setSelectedTime(slot.time)}
+                      className={`cursor-pointer p-2 rounded-lg text-sm ${
+                        isSelected
+                          ? "bg-teal-600 text-white"
+                          : "bg-gray-100 hover:bg-gray-200"
+                      }`}
+                    >
+                      {slotTime.toLocaleTimeString([], {
+                        hour: "numeric",
+                        minute: "2-digit",
+                      })}
+                    </button>
                   );
-                })()}
+                })}
               </div>
-            ) : (
-              <p className="text-sm text-gray-500">
-                No available times for this date. Please select another date.
-              </p>
-            )}
-          </div>
-        )}
-      </div>
-    );
-  }
+
+              {selectedTime && (
+                <div className="mt-4 space-y-3">
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleConfirmSelection();
+                    }}
+                    className={`cursor-pointer px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors w-full ${
+                      isConfirming ? "opacity-50 cursor-not-allowed" : ""
+                    }`}
+                    type="button"
+                    disabled={isConfirming}
+                  >
+                    {isConfirming ? "Confirming..." : "Confirm Selection"}
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
 };
 
 export const CalComGetAvailabilityUI = makeAssistantToolUI<
