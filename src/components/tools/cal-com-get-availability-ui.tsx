@@ -33,6 +33,7 @@ type AvailabilityComponentProps = {
 };
 
 const AvailabilityComponent = ({
+  args,
   status,
   result,
   addResult,
@@ -45,55 +46,61 @@ const AvailabilityComponent = ({
   const [timeZone, setTimeZone] = useState<string>("UTC");
   const [selectedDate, setSelectedDate] = useState<Date | undefined>();
 
-  const fetchAvailability = useCallback(async (date: Date) => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const start = startOfDay(date).toISOString();
-      const end = endOfDay(date).toISOString();
+  const fetchAvailability = useCallback(
+    async (date: Date) => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const start = args.start || startOfDay(date).toISOString();
+        const end = args.end || endOfDay(date).toISOString();
 
-      const searchParams = new URLSearchParams();
-      searchParams.append("start", start);
-      searchParams.append("end", end);
+        const searchParams = new URLSearchParams();
+        searchParams.append("start", start);
+        searchParams.append("end", end);
 
-      const response = await fetch(`/api/cal-availability?${searchParams}`, {
-        headers: {
-          "Content-Type": "application/json",
-          "cal-api-version": "2024-09-04",
-        },
-      });
+        const response = await fetch(`/api/cal-availability?${searchParams}`, {
+          headers: {
+            "Content-Type": "application/json",
+            "cal-api-version": "2024-09-04",
+          },
+        });
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(
-          `Failed to fetch availability: ${errorData?.error || response.statusText}`
-        );
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(
+            `Failed to fetch availability: ${errorData?.error || response.statusText}`
+          );
+        }
+
+        const data = await response.json();
+
+        if (!data.availableSlots || !Array.isArray(data.availableSlots)) {
+          throw new Error("Invalid response format from availability API");
+        }
+
+        // Store the fetched slots in local state
+        setAvailableSlots(data.availableSlots);
+        setTimeZone(data.timeZone || "UTC");
+      } catch (err) {
+        console.error("Availability fetch error:", err);
+        const errorMessage =
+          err instanceof Error
+            ? err.message
+            : "An unexpected error occurred while fetching availability.";
+        setError(errorMessage);
+
+        addResult({
+          availableSlots: [],
+          timeZone: "UTC",
+          status: "error",
+          message: errorMessage,
+        });
+      } finally {
+        setIsLoading(false);
       }
-
-      const data = await response.json();
-
-      if (!data.availableSlots || !Array.isArray(data.availableSlots)) {
-        throw new Error("Invalid response format from availability API");
-      }
-
-      // Store the fetched slots in local state
-      setAvailableSlots(data.availableSlots);
-      setTimeZone(data.timeZone || "UTC");
-    } catch (err) {
-      console.error("Availability fetch error:", err);
-      const errorMessage = err instanceof Error ? err.message : "An unexpected error occurred while fetching availability.";
-      setError(errorMessage);
-
-      addResult({
-        availableSlots: [],
-        timeZone: "UTC",
-        status: "error",
-        message: errorMessage,
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  }, [addResult]);
+    },
+    [addResult, args.start, args.end]
+  );
 
   useEffect(() => {
     if (selectedDate) {
@@ -102,11 +109,22 @@ const AvailabilityComponent = ({
   }, [selectedDate, fetchAvailability]);
 
   useEffect(() => {
-    if (status.type === "running" && !isLoading && !result && !selectedDate) {
-      // Set initial date to today when the tool starts
-      setSelectedDate(new Date());
+    if (status.type === "running" && !isLoading && !result) {
+      if (!args.start) {
+        return;
+      }
+
+      let initialDate: Date;
+      if (args.start) {
+        const parsedDate = new Date(args.start);
+        initialDate = isNaN(parsedDate.getTime()) ? new Date() : parsedDate;
+      } else {
+        initialDate = new Date();
+      }
+      setSelectedDate(initialDate);
+      fetchAvailability(initialDate);
     }
-  }, [status.type, isLoading, result, selectedDate]);
+  }, [status.type, isLoading, result, fetchAvailability, args.start]);
 
   if (status.type === "running" && !selectedDate) {
     return (
