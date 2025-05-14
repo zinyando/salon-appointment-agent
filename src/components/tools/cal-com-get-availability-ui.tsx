@@ -234,7 +234,7 @@ const AvailabilityComponent = ({
   };
 
   return (
-    <div className="space-y-6 p-4 bg-white rounded-lg shadow-md border border-gray-100">
+    <div className="space-y-6 p-4 bg-white rounded-lg shadow-md border border-gray-100 mt-8">
       <div className="flex flex-col items-center space-y-4">
         <h3 className="text-lg font-semibold">Select a Date</h3>
         <DayPicker
