@@ -1,6 +1,8 @@
 import { makeAssistantToolUI } from "@assistant-ui/react";
-import { useState } from "react";
-import { useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { DayPicker } from "react-day-picker";
+import { format, startOfDay, endOfDay } from "date-fns";
+import "react-day-picker/dist/style.css";
 
 type AvailabilityArgs = {
   start: string;
@@ -31,7 +33,6 @@ type AvailabilityComponentProps = {
 };
 
 const AvailabilityComponent = ({
-  args,
   status,
   result,
   addResult,
@@ -42,19 +43,18 @@ const AvailabilityComponent = ({
   const [isConfirming, setIsConfirming] = useState(false);
   const [availableSlots, setAvailableSlots] = useState<Slot[]>([]);
   const [timeZone, setTimeZone] = useState<string>("UTC");
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>();
 
-  useEffect(() => {
-    const fetchAvailability = async () => {
+  const fetchAvailability = useCallback(async (date: Date) => {
       setIsLoading(true);
       setError(null);
       try {
-        if (!args.start || !args.end) {
-          return;
-        }
+        const start = startOfDay(date).toISOString();
+        const end = endOfDay(date).toISOString();
 
         const searchParams = new URLSearchParams();
-        searchParams.append("start", args.start);
-        searchParams.append("end", args.end);
+        searchParams.append("start", start);
+        searchParams.append("end", end);
 
         const response = await fetch(`/api/cal-availability?${searchParams}`, {
           headers: {
@@ -96,13 +96,21 @@ const AvailabilityComponent = ({
         });
       } finally {
         setIsLoading(false);
-      }
-    };
+      };
+    }, [addResult]);
 
-    if (status.type === "running" && !isLoading && !result) {
-      fetchAvailability();
+  useEffect(() => {
+    if (selectedDate) {
+      fetchAvailability(selectedDate);
     }
-  }, [status.type, isLoading, result, args, addResult]);
+  }, [selectedDate, fetchAvailability]);
+
+  useEffect(() => {
+    if (status.type === "running" && !isLoading && !result && !selectedDate) {
+      // Set initial date to today when the tool starts
+      setSelectedDate(new Date());
+    }
+  }, [status.type, isLoading, result, selectedDate]);
 
   if (status.type === "running" || isLoading) {
     return (
@@ -187,8 +195,41 @@ const AvailabilityComponent = ({
     );
   }
 
-  if (availableSlots.length > 0) {
-    const handleConfirmSelection = async () => {
+  const handleDateSelect = (date: Date | undefined) => {
+    if (date) {
+      setSelectedDate(date);
+      setSelectedTime(null); // Reset selected time when date changes
+      setAvailableSlots([]); // Reset available slots
+      setError(null); // Reset any errors
+    }
+  };
+
+  // Calendar and time slots view
+  if (status.type === "running" || !result?.status) {
+    return (
+      <div className="space-y-6 p-4 bg-white rounded-lg shadow-md border border-gray-100">
+        <div className="flex flex-col items-center space-y-4">
+          <h3 className="text-lg font-semibold">Select a Date</h3>
+          <DayPicker
+            mode="single"
+            selected={selectedDate}
+            onSelect={handleDateSelect}
+            disabled={[{ before: new Date() }]}
+            className="border rounded-lg p-3"
+          />
+        </div>
+
+        {selectedDate && (
+          <div className="mt-6">
+            <h4 className="font-medium text-gray-900 mb-4">
+              Available times for {format(selectedDate, "EEEE, MMMM d")}
+            </h4>
+            {isLoading ? (
+              <p className="text-sm text-gray-500">Loading available times...</p>
+            ) : availableSlots.length > 0 ? (
+              <div>
+                {(() => {
+                  const handleConfirmSelection = async () => {
       if (!selectedTime) return;
 
       setIsConfirming(true);
@@ -223,85 +264,66 @@ const AvailabilityComponent = ({
       };
 
       addResult(newResult);
-      setIsConfirming(false);
-    };
+                    setIsConfirming(false);
+                  };
 
-    // Group slots by date
-    const slotsByDate: Record<string, Slot[]> = {};
-    availableSlots.forEach((slot) => {
-      const date = new Date(slot.time).toLocaleDateString();
-      if (!slotsByDate[date]) {
-        slotsByDate[date] = [];
-      }
-      slotsByDate[date].push(slot);
-    });
+                  return (
+                    <div>
+                      <div className="grid grid-cols-3 gap-2">
+                        {availableSlots.map((slot) => {
+                          const slotTime = new Date(slot.time);
+                          const isSelected = selectedTime === slot.time;
 
-    return (
-      <div className="space-y-6">
-        <h3 className="text-lg font-semibold">Available Time Slots</h3>
-        <p className="text-sm text-muted-foreground">
-          Select a time slot to book your appointment.
-        </p>
+                          return (
+                            <button
+                              key={slot.time}
+                              onClick={() => setSelectedTime(slot.time)}
+                              className={`cursor-pointer p-2 rounded-lg text-sm ${
+                                isSelected
+                                  ? "bg-teal-600 text-white"
+                                  : "bg-gray-100 hover:bg-gray-200"
+                              }`}
+                            >
+                              {slotTime.toLocaleTimeString([], {
+                                hour: "numeric",
+                                minute: "2-digit",
+                              })}
+                            </button>
+                          );
+                        })}
+                      </div>
 
-        {Object.entries(slotsByDate).map(([date, slots]) => (
-          <div key={date} className="space-y-2">
-            <h4 className="font-medium text-gray-900">{date}</h4>
-            <div className="grid grid-cols-3 gap-2">
-              {slots.map((slot) => {
-                const slotTime = new Date(slot.time);
-                const isSelected = selectedTime === slot.time;
-
-                return (
-                  <button
-                    key={slot.time}
-                    onClick={() => setSelectedTime(slot.time)}
-                    className={`cursor-pointer p-2 rounded-lg text-sm ${
-                      isSelected
-                        ? "bg-teal-600 text-white"
-                        : "bg-gray-100 hover:bg-gray-200"
-                    }`}
-                  >
-                    {slotTime.toLocaleTimeString([], {
-                      hour: "numeric",
-                      minute: "2-digit",
-                    })}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        ))}
-
-        {selectedTime && (
-          <div className="mt-4 space-y-3">
-            <button
-              onClick={(e) => {
-                e.preventDefault();
-                handleConfirmSelection();
-              }}
-              className={`cursor-pointer px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors w-full ${
-                isConfirming ? "opacity-50 cursor-not-allowed" : ""
-              }`}
-              type="button"
-              disabled={isConfirming}
-            >
-              {isConfirming ? "Confirming..." : "Confirm Selection"}
-            </button>
+                      {selectedTime && (
+                        <div className="mt-4 space-y-3">
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              handleConfirmSelection();
+                            }}
+                            className={`cursor-pointer px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors w-full ${
+                              isConfirming ? "opacity-50 cursor-not-allowed" : ""
+                            }`}
+                            type="button"
+                            disabled={isConfirming}
+                          >
+                            {isConfirming ? "Confirming..." : "Confirm Selection"}
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
+              </div>
+            ) : (
+              <p className="text-sm text-gray-500">
+                No available times for this date. Please select another date.
+              </p>
+            )}
           </div>
         )}
       </div>
     );
   }
-
-  return (
-    <div className="p-4 bg-white rounded-lg shadow">
-      <p className="text-sm text-gray-500">
-        Preparing to fetch availability for{" "}
-        {new Date(args.start).toLocaleDateString()} to{" "}
-        {new Date(args.end).toLocaleDateString()}
-      </p>
-    </div>
-  );
 };
 
 export const CalComGetAvailabilityUI = makeAssistantToolUI<
