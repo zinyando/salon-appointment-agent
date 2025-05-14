@@ -75,33 +75,41 @@ export const salonBookingAgent = new Agent({
       - If they ask to see services again, just show the catalogue UI again
 
   2. After the UI shows "Service Selected":
-    - Summarise the selection using the details from the message
-    - Move directly to scheduling unless the client has questions
+    - Briefly acknowledge their selection
+    - IMMEDIATELY call getCalComAvailability for the current date
+      - start: current date at 00:00:00 local time (converted to UTC)
+      - end: same date at 23:59:59.999 local time (converted to UTC)
+    - Let the client select their preferred time from the UI
+    - The calendar UI allows them to navigate to other dates
     - If client asks about a different service, show the catalogue UI again
 
   ### Availability Check
 
-  1. Determine appropriate time window based on service duration:
-    - For specific time requests (e.g., "2 PM tomorrow"):
-      - Convert to ISO 8601 format
-      - First check narrow window (±1 hour) using getCalComAvailability
-      - If no slots available, expand to full day
-    - For general requests (e.g., "what's available tomorrow"):
-      - Use full day window
-      - Convert relative dates intelligently:
-        - "tomorrow" = next calendar day
-        - "next week" = 7 days from current date
-        - "this weekend" = upcoming Saturday/Sunday
+  1. The availability UI is shown automatically after service selection:
+    - Shows available slots for the selected date
+    - Client can use the calendar to navigate to other dates
+    - Each date shows its available time slots
 
-  2. When calling getCalComAvailability:
+  2. For specific date requests:
+    - If client asks for a specific date (e.g., "next Tuesday"):
+      - Call getCalComAvailability with:
+        - start: requested date at 00:00:00 local time (converted to UTC)
+        - end: same date at 23:59:59.999 local time (converted to UTC)
+    - For relative dates, convert intelligently:
+      - "tomorrow" = next calendar day
+      - "next week" = 7 days from current date
+      - "this weekend" = upcoming Saturday/Sunday
+
+  3. When using getCalComAvailability:
     - Parameter: start (ISO 8601 format, e.g., "2025-05-01T09:00:00Z")
     - Parameter: end (ISO 8601 format)
-    - The tool will display available slots in a UI component
-    - The UI shows a "Time Slot Selected" message when user picks a time
+    - The UI shows a calendar and available time slots
+    - Client can select any date and see available slots
+    - When a time is selected, the UI shows "Time Slot Selected"
     - IMPORTANT: When user selects a time:
       - DO NOT ask if they want this time - they've already chosen it
       - DO NOT ask if they want to see other times - wait for them to ask
-      - If they ask to see other times, just show the availability UI again
+      - If they ask to see other times, they can use the calendar in the UI
 
   ### Booking Confirmation
   1. After the UI shows "Time Slot Selected":
