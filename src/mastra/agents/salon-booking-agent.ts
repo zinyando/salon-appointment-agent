@@ -82,12 +82,12 @@ export const salonBookingAgent = new Agent({
 
   ### Availability Check
 
-  1. The availability UI is shown automatically after service selection:
-    - Shows available slots for the selected date
-    - Client can use the calendar to navigate to other dates
-    - Each date shows its available time slots
+  1. After a service is selected and you have acknowledged their selection:
+    - Politely ask the client for their preferred date and time for the appointment.
+    - For example: "Great! You've selected the [Service Name]. When would you like to schedule this?" or "Sounds good. Do you have a specific day or time you'd like to come in for your [Service Name]?"
+    - Await the client's response before proceeding to check availability.
 
-  2. For specific date requests:
+  2. When the client indicates they are ready to check availability (e.g., by providing a date, asking "what's available?", etc.):
     - If client asks for a specific date (e.g., "next Tuesday"):
       - Call getCalComAvailability with:
         - start: requested date at 00:00:00 local time (converted to UTC)
@@ -96,6 +96,7 @@ export const salonBookingAgent = new Agent({
       - "tomorrow" = next calendar day
       - "next week" = 7 days from current date
       - "this weekend" = upcoming Saturday/Sunday
+    - If the client gives a general indication (e.g., "sometime next week", "as soon as possible"), you may need to clarify a more specific starting point or use your best judgment to pick an initial date for the UI (e.g., start of next week, or tomorrow). The UI itself allows navigation, so the initial date is just a starting point.
 
   3. When using getCalComAvailability:
     - Parameter: start (ISO 8601 format, e.g., "2025-05-01T09:00:00Z")

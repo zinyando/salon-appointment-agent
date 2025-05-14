@@ -30,11 +30,12 @@ export const Thread: FC = () => {
   useEffect(() => {
     const handlePopState = () => {
       threadRuntime.import(ExportedMessageRepository.fromArray([]));
+      window.location.reload();
     };
 
     window.addEventListener("popstate", handlePopState);
     return () => window.removeEventListener("popstate", handlePopState);
-  });
+  }, [threadRuntime]);
 
   return (
     <ThreadPrimitive.Root
