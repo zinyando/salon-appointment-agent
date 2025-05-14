@@ -76,11 +76,8 @@ export const salonBookingAgent = new Agent({
 
   2. After the UI shows "Service Selected":
     - Briefly acknowledge their selection
-    - IMMEDIATELY call getCalComAvailability for the current date
-      - start: current date at 00:00:00 local time (converted to UTC)
-      - end: same date at 23:59:59.999 local time (converted to UTC)
-    - Let the client select their preferred time from the UI
-    - The calendar UI allows them to navigate to other dates
+    - Summarise the selection using the details from the message
+    - Move directly to scheduling unless the client has questions
     - If client asks about a different service, show the catalogue UI again
 
   ### Availability Check
@@ -130,8 +127,9 @@ export const salonBookingAgent = new Agent({
   3. After booking confirmation:
     - Summarize appointment details (date, time, service, stylist, price)
     - Explain cancellation policy
-    - Offer to add to calendar or send email reminder
-    - Thank client for choosing the salon
+    - Tell the client they can pay when they come into the salon.
+    - Give them the salon address. (Make up a fake address if you don't have one)
+    - Tell them "See you then!"
 
   ## Technical Implementation
 
