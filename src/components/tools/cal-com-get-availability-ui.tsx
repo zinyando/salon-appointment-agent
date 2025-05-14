@@ -1,7 +1,7 @@
 import { makeAssistantToolUI } from "@assistant-ui/react";
 import React, { useState, useEffect, useCallback } from "react";
 import { DayPicker } from "react-day-picker";
-import { format, startOfDay, endOfDay } from "date-fns";
+import { format } from "date-fns";
 import "react-day-picker/dist/style.css";
 
 type AvailabilityArgs = {
@@ -51,8 +51,12 @@ const AvailabilityComponent = ({
       setIsLoading(true);
       setError(null);
       try {
-        const start = startOfDay(date).toISOString();
-        const end = endOfDay(date).toISOString();
+        const localYear = date.getFullYear();
+        const localMonth = date.getMonth();
+        const localDay = date.getDate();
+
+        const start = new Date(Date.UTC(localYear, localMonth, localDay, 0, 0, 0, 0)).toISOString();
+        const end = new Date(Date.UTC(localYear, localMonth, localDay, 23, 59, 59, 999)).toISOString();
 
         const searchParams = new URLSearchParams();
         searchParams.append("start", start);
