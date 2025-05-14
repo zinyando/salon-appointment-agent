@@ -51,8 +51,8 @@ const AvailabilityComponent = ({
       setIsLoading(true);
       setError(null);
       try {
-        const start = args.start || startOfDay(date).toISOString();
-        const end = args.end || endOfDay(date).toISOString();
+        const start = startOfDay(date).toISOString();
+        const end = endOfDay(date).toISOString();
 
         const searchParams = new URLSearchParams();
         searchParams.append("start", start);
@@ -78,7 +78,6 @@ const AvailabilityComponent = ({
           throw new Error("Invalid response format from availability API");
         }
 
-        // Store the fetched slots in local state
         setAvailableSlots(data.availableSlots);
         setTimeZone(data.timeZone || "UTC");
       } catch (err) {
@@ -99,32 +98,33 @@ const AvailabilityComponent = ({
         setIsLoading(false);
       }
     },
-    [addResult, args.start, args.end]
+    [addResult]
   );
 
   useEffect(() => {
-    if (selectedDate) {
-      fetchAvailability(selectedDate);
-    }
-  }, [selectedDate, fetchAvailability]);
+    const handleInitialLoad = () => {
+      if (!args.start) return;
 
-  useEffect(() => {
-    if (status.type === "running" && !isLoading && !result) {
-      if (!args.start) {
-        return;
-      }
-
-      let initialDate: Date;
-      if (args.start) {
-        const parsedDate = new Date(args.start);
-        initialDate = isNaN(parsedDate.getTime()) ? new Date() : parsedDate;
-      } else {
-        initialDate = new Date();
-      }
+      const parsedDate = new Date(args.start);
+      const initialDate = isNaN(parsedDate.getTime()) ? new Date() : parsedDate;
       setSelectedDate(initialDate);
-      fetchAvailability(initialDate);
+      return initialDate;
+    };
+
+    if (status.type === "running" && !isLoading && !result && !selectedDate) {
+      const initialDate = handleInitialLoad();
+      if (initialDate) {
+        fetchAvailability(initialDate);
+      }
     }
-  }, [status.type, isLoading, result, fetchAvailability, args.start]);
+  }, [
+    selectedDate,
+    status.type,
+    isLoading,
+    result,
+    fetchAvailability,
+    args.start,
+  ]);
 
   if (status.type === "running" && !selectedDate) {
     return (
@@ -196,6 +196,7 @@ const AvailabilityComponent = ({
       setSelectedTime(null);
       setAvailableSlots([]);
       setError(null);
+      fetchAvailability(date);
     }
   };
 
